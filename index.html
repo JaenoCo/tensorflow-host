@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Model Host</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 2rem;
+    }
+    input, button {
+      margin: 0.5rem;
+      padding: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>TensorFlow.js Model Host</h1>
+  <p>Enter input and run prediction</p>
+  <input id="input" type="number" placeholder="Enter a number" />
+  <button onclick="predict()">Predict</button>
+  <p id="result"></p>
+
+  <script>
+    let model;
+
+    async function loadModel() {
+      model = await tf.loadLayersModel('./model.json');
+      console.log("Model loaded");
+    }
+
+    async function predict() {
+      if (!model) {
+        document.getElementById('result').innerText = "Model not loaded";
+        return;
+      }
+
+      const inputVal = parseFloat(document.getElementById('input').value);
+      const inputTensor = tf.tensor2d([[inputVal]]);
+      const prediction = model.predict(inputTensor);
+      const output = prediction.dataSync()[0];
+
+      document.getElementById('result').innerText = `Prediction: ${output.toFixed(4)}`;
+    }
+
+    loadModel();
+  </script>
+</body>
+</html>
